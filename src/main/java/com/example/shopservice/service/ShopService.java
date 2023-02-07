@@ -5,6 +5,7 @@ import com.example.shopservice.model.Product;
 import com.example.shopservice.repositories.OrderRepo;
 import com.example.shopservice.repositories.ProductRepo;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Service
+@Data
 public class ShopService {
-	private final ProductRepo availableProducts;
+	private ProductRepo availableProducts = new ProductRepo();
 	private OrderRepo currentOrders =new OrderRepo();
 //	private OrderRepo archivedOrders;
 
@@ -41,15 +43,16 @@ public class ShopService {
 		}
 		return productList;
 	}
-	public void addOrder(Order order) {
-		order.getOrderedProducts().stream()
-						.forEach(p -> {
-							if (!listProducts(true).contains(p)) {
-								throw new NoSuchElementException("Product " + p + " does not exist in this shop! Where did you find it?");
-							}
-						});
-		currentOrders.addSingleOrder(order);
+
+	public List<Product> addProduct(Product newProduct) {
+		availableProducts.addProduct(newProduct);
+		return availableProducts.getProducts();
 	}
+
+	public List<Product> deleteProduct(int id) {
+		availableProducts.listProducts().removeIf(product -> product.getId() == id);
+		return availableProducts.getProducts();
+	};
 
 	public Optional<Order> getOrderById(int id) {
 		Optional<Order> result = currentOrders.getById(id);
@@ -65,5 +68,17 @@ public class ShopService {
 		}
 		return orderList;
 	}
+
+	public void addOrder(Order order) {
+		order.getOrderedProducts().stream()
+				.forEach(p -> {
+					if (!listProducts(true).contains(p)) {
+						throw new NoSuchElementException("Product " + p + " does not exist in this shop! Where did you find it?");
+					}
+				});
+		currentOrders.addSingleOrder(order);
+	}
+
+
 
 }

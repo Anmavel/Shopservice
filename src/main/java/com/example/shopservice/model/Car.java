@@ -1,12 +1,11 @@
 package com.example.shopservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @ToString
 public class Car implements Product {
